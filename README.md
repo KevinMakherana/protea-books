@@ -1,59 +1,119 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Protea Books — Online Bookstore
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A full-stack e-commerce web application for an online bookstore, built as a portfolio project demonstrating Laravel MVC architecture, relational database design, and a complete customer-to-admin business workflow.
 
-## About Laravel
+## The Problem
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Protea Books needed an online storefront where customers could browse and buy books, and staff could manage inventory and fulfil orders — without relying on spreadsheets or manual processes. This application provides a public storefront with cart and checkout, and a separate login-protected admin panel for managing categories, books, and order status.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**Storefront (public)**
+- Browse books by category, with pagination
+- Book detail pages with cover images, stock status, and descriptions
+- Session-based shopping cart (add, remove, quantity)
+- Checkout with server-side stock validation (prevents overselling)
+- Order confirmation page
+- Contact Us page
 
-## Learning Laravel
+**Admin Panel (login-protected)**
+- Dashboard with live stats: total books, total orders, pending orders, revenue
+- Categories: full CRUD, with delete protection if books are assigned
+- Books: full CRUD, including cover image upload, with delete protection if a book has order history
+- Orders: view order details and update status (Pending / Completed / Cancelled)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Tech Stack
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **PHP 8.2** / **Laravel 12**
+- **MySQL** (via XAMPP's MariaDB locally)
+- **Blade** templating
+- **Bootstrap 5** (via CDN) for styling
+- **Laravel's built-in authentication** (`Auth` facade) for the admin panel
 
-## Laravel Sponsors
+## Screenshots
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+![Storefront homepage](screenshots/homepage.png)
+![Book detail page](screenshots/book-detail.png)
+![Admin dashboard](screenshots/admin-dashboard.png)
 
-### Premium Partners
+## Getting Started
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Prerequisites
 
-## Contributing
+- PHP 8.2 or newer
+- Composer
+- MySQL (or MariaDB, e.g. via XAMPP)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Installation
 
-## Code of Conduct
+1. Clone the repository:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+git clone https://github.com/KevinMakherana/protea-books.git
+cd protea-books
 
-## Security Vulnerabilities
+2. Install dependencies:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+composer install
+
+3. Copy the environment file and generate an app key:
+
+copy .env.example .env
+php artisan key:generate
+
+4. Open `.env` and set your database credentials:
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=protea_books
+DB_USERNAME=root
+DB_PASSWORD=
+
+5. Create the database (via phpMyAdmin, or the MySQL CLI):
+
+CREATE DATABASE protea_books;
+
+6. Run migrations and seed sample data (categories, books, and an admin user):
+
+php artisan migrate --seed
+
+7. Link storage so uploaded book cover images are publicly viewable:
+
+php artisan storage:link
+
+8. Start the development server:
+
+php artisan serve
+
+9. Visit **http://127.0.0.1:8000** for the storefront.
+
+### Admin Access
+
+- URL: **http://127.0.0.1:8000/admin**
+- Email: `admin@proteabooks.test`
+- Password: `password`
+
+## Database
+
+Four core tables: `categories`, `books`, `orders`, and `order_items`, with foreign key constraints (books belong to a category; order items reference both an order and a book). Deleting a category or book with existing order/stock history is blocked at the application level with a clear error message, rather than allowed to silently break data integrity.
+
+## Project Structure
+
+app/Http/Controllers/       # Public controllers (Book, Cart, Checkout)
+app/Http/Controllers/Admin/ # Admin controllers (Auth, Dashboard, Category, Book, Order)
+app/Models/                 # Eloquent models and relationships
+database/migrations/        # Table schemas
+database/seeders/           # Sample categories, books, and admin user
+resources/views/            # Blade templates (public + admin, separate layouts)
+routes/web.php              # All application routes
+
+## Future Improvements
+
+- Customer accounts and order history (currently checkout is guest-only)
+- Search functionality across the catalog
+- Email notifications on order status change
+- Payment gateway integration
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
